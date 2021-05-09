@@ -2,6 +2,10 @@ import numpy as np
 import cv2
 
 def vector_field():
+    """
+    Calculate optical flow and segment image into square sections each with size 25 by 25 pixels. 
+    The optical flow vectors are drawn at the center of each section for visualization.
+    """
 
     cap = cv2.VideoCapture(cv2.samples.findFile("Cars On Highway.mp4"))
     ret, frame1 = cap.read()
@@ -32,7 +36,9 @@ def vector_field():
 
 
 def draw_vec_field(frame, img, flow, grid_size=25):
-
+    """
+    Function used to draw the optical flow vectors
+    """
     height, width = img.shape
 
     # Create Grid (Default segments image into square sections with size 25 by 25 pixels)
@@ -50,6 +56,10 @@ def draw_vec_field(frame, img, flow, grid_size=25):
 
 
 def flow_filter():
+
+    """
+    Calculate optical flow and filter pixels to only show pixels where movement is detected.
+    """
 
     cap = cv2.VideoCapture(cv2.samples.findFile("Cars On Highway.mp4"))
     ret, frame1 = cap.read()
@@ -96,5 +106,12 @@ def flow_filter():
 
 if __name__ == "__main__":
 
-    flow_filter() 
+    """
+    Uncomment the desired function below to visualize the output.
+    Vector_field() shows the vector field for the video as objects move.
+    Flow_filter() shows only pixels where motion is detected.
+    """
+
     # vector_field()
+    flow_filter() 
+    
