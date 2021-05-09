@@ -56,6 +56,7 @@ def flow_filter():
     prev = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
     hsv = np.zeros_like(frame1)
     hsv[..., 1] = 255
+    motion = np.zeros_like(frame1)
 
     while True:
         
@@ -66,14 +67,25 @@ def flow_filter():
 
         next_gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
         flow = cv2.calcOpticalFlowFarneback(prev, next_gray, None, 0.5, 3, 25, 3, 5, 1.2, 0)
+
+        # Flow Vecotrs
         mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
-        # draw_vectors(frame2, mag, ang)
+
+        # Show pixels with motion in HSV color space
+        norm_mag = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
         hsv[..., 0] = ang * 180 / np.pi / 2
-        hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+        hsv[..., 2] = norm_mag
         bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-        cv2.imshow('frame2', bgr)
-        cv2.imshow('flow', frame2)
+        # If the normalized magnitude of the optical flow vector is greater than 25, set the mask image intensity equal to the original frame intensity.
+        for i in range(len(norm_mag)):
+            for j in range(len(norm_mag[i])):
+
+                if norm_mag[i][j] > 25:
+                    motion[i][j] = frame2[i][j]
+
+        cv2.imshow('Color Coded Optical Flow', bgr)
+        cv2.imshow('Filtered Motion', motion)
         k = cv2.waitKey(30) & 0xff
         if k == 27:
             break
@@ -84,5 +96,5 @@ def flow_filter():
 
 if __name__ == "__main__":
 
-    # flow_filter() 
-    vector_field()
+    flow_filter() 
+    # vector_field()
